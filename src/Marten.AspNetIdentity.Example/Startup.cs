@@ -23,7 +23,7 @@ namespace Marten.AspNetIdentity.Example
 		{
 			services.AddLogging();
 
-			string connectionString = "server=localhost;database=aspnetidentity;uid=aspnetidentity;pwd=aspnetidentity;";
+			string connectionString = "Host=localhost;Port=5432;Database=aspnetidentity;Username=aspnetidentity;Password=aspnetidentity;";
 
 			services.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddMartenStores<ApplicationUser, IdentityRole>(connectionString)

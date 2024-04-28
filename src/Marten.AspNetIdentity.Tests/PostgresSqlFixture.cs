@@ -1,31 +1,28 @@
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Configurations.Databases;
-using DotNet.Testcontainers.Containers.Modules.Databases;
+using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace Marten.AspNetIdentity.Tests
 {
     public class PostgresSqlFixture : IAsyncLifetime
     {
-        private readonly PostgreSqlTestcontainer _testContainer;
+        private readonly PostgreSqlContainer _testContainer;
         
         public PostgresSqlFixture()
         {
-            var testContainerBuilder = new TestcontainersBuilder<PostgreSqlTestcontainer>()
+            var testContainerBuilder = new PostgreSqlBuilder()
                 .WithCleanUp(true)
-                .WithDatabase(new PostgreSqlTestcontainerConfiguration
-                {
-                    Database = "aspnetidentity",
-                    Username = "aspnetidentity",
-                    Password = "aspnetidentity"
-                })
+                .WithPortBinding(5432, true)
+                .WithDatabase("aspnetidentity")
+                .WithPassword("aspnetidentity")
+                .WithUsername("aspnetidentity")
+                .WithExposedPort(5432)
                 .WithImage("clkao/postgres-plv8");
 
             _testContainer = testContainerBuilder.Build();
         }
 
-        public string ConnectionString => _testContainer.ConnectionString;
+        public string ConnectionString => _testContainer.GetConnectionString();
         
         public async Task InitializeAsync()
         {
@@ -36,6 +33,7 @@ namespace Marten.AspNetIdentity.Tests
                 "/bin/sh", "-c",
                 "psql -U aspnetidentity -c \"CREATE EXTENSION plv8; SELECT extversion FROM pg_extensions WHERE extname = 'plv8';\""
             });
+            var thing = string.Empty;
         }
 
         public async Task DisposeAsync()
